@@ -82,14 +82,7 @@ public class ObservationServiceImpl implements ObservationService {
         }
 
         // Validate patient and encounter exist before creating observation
-        Optional<Patient> optionalPatient = patientRepository.findById(patientId);
-        if (optionalPatient.isEmpty()) {
-            throw new NotFoundException("Patient not found");
-        }
-        Patient patient = optionalPatient.get();
-        if (!patient.isValid()) {
-            throw new NotFoundException("Observations for this patient are not available. Patient is not valid. Please contact the administrator.  ");
-        }
+        getPatientInfo(patientId);
 
         Pageable pageable = PageRequest.of(page, size);
 
@@ -116,5 +109,38 @@ public class ObservationServiceImpl implements ObservationService {
         List<Observation> observations = pageableObservations.getContent();
         return observations.stream().map(observationMapper::toDTO).toList();
 
+    }
+
+    @Override
+    public List<ObservationResponseDTO> getObservationsForEncounterAndPatients(UUID patientId, UUID encounterId, int page, int size) {
+
+        if (patientId == null || encounterId == null) {
+            throw new NotFoundException("Patient id and encounter id are required");
+        }
+
+        // Validate patient and encounter exist before creating observation
+        getPatientInfo(patientId);
+
+        boolean encounterExists = encounterRepository.existsById(encounterId);
+        if (!encounterExists) {
+            throw new NotFoundException("Encounter not found");
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Observation> pageableObservations = observationRepository.findByPatientIdAndEncounterId(encounterId, patientId, pageable);
+        List<Observation> observations = pageableObservations.getContent();
+        return observations.stream().map(observationMapper::toDTO).toList();
+
+    }
+
+    private void getPatientInfo(UUID patientId) {
+        Optional<Patient> optionalPatient = patientRepository.findById(patientId);
+        if (optionalPatient.isEmpty()) {
+            throw new NotFoundException("Patient not found");
+        }
+        Patient patient = optionalPatient.get();
+        if (!patient.isValid()) {
+            throw new NotFoundException("Observations for this patient are not available. Patient is not valid. Please contact the administrator.  ");
+        }
     }
 }

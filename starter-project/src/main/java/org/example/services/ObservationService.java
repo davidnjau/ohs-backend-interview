@@ -17,4 +17,7 @@ public interface ObservationService {
     List<ObservationResponseDTO> getObservationsForPatient(UUID patientId, int page, int size);
 
     List<ObservationResponseDTO> getObservationsForEncounter(UUID encounterId, int page, int size);
+
+    List<ObservationResponseDTO> getObservationsForEncounterAndPatients(UUID patientId, UUID encounterId, int page, int size);
+
 }
