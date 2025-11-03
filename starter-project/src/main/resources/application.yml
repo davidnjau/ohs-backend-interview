@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: digital-health-exercise
+  datasource:
+    url: jdbc:postgresql://ohs_db:5432/ohs_database
+    username: springuser_86cs0l
+    password: UletbapeGFZv3wpAIlPB
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: Africa/Nairobi
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    cache:
+      type: redis
+    data:
+      redis:
+        host: redis-vector
+        port: 6379
+
+
+server:
+  port: 8080
+
+ohs:
+  broadcast:
+    expiry-hours: 24
+
+logging:
+  level:
+    root: INFO
+    com.dave.ohs: DEBUG
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+  show-actuator: true
+
+
+
+

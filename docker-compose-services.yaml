@@ -53,3 +53,6 @@ volumes:
 networks:
   ohs_spring_network:
     external: true
+
+
+#Create the network using the command: docker network create ohs_spring_network
