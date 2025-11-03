@@ -1,6 +1,7 @@
 package org.example.controllers;
 
 import org.example.entity.Patient;
+import org.example.exception.ResponseWrapper;
 import org.example.services.PatientService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,12 +21,19 @@ public class PatientController {
     }
 
     @PostMapping
-    public ResponseEntity<Patient> createPatient(@RequestBody Patient patient) {
-        return ResponseEntity.ok(patientService.createPatient(patient));
+    public ResponseEntity<ResponseWrapper<Patient>> createPatient(@RequestBody Patient patient) {
+        return ResponseEntity.ok(
+                ResponseWrapper
+                        .success(patientService.createPatient(patient)
+                        )
+        );
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Patient> getPatient(@PathVariable UUID id) {
+
+        
+
         return patientService.getPatient(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -47,7 +55,9 @@ public class PatientController {
             @RequestParam(required = false) String family,
             @RequestParam(required = false) String given,
             @RequestParam(required = false) String identifier,
-            @RequestParam(required = false) LocalDate birthDate
+            @RequestParam(required = false) LocalDate birthDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
     ) {
         return ResponseEntity.ok(
                 patientService.searchPatients(family, given, identifier, birthDate)

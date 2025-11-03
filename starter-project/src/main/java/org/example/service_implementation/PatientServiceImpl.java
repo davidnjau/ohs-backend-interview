@@ -21,11 +21,18 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public Patient createPatient(Patient patient) {
+
+        // Validate input data before saving to the database
+
+
         return patientRepository.save(patient);
     }
 
     @Override
     public Optional<Patient> getPatient(UUID id) {
+
+
+
         return patientRepository.findById(id);
     }
 
