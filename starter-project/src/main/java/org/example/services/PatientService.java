@@ -1,5 +1,6 @@
 package org.example.services;
 
+import org.example.dto.*;
 import org.example.entity.Patient;
 
 import java.time.LocalDate;
@@ -9,13 +10,15 @@ import java.util.UUID;
 
 public interface PatientService {
 
-    Patient createPatient(Patient patient);
+    PatientResponseDTO createPatient(PatientRequestDTO request);
 
-    Optional<Patient> getPatient(UUID id);
+    PatientResponseDTO updatePatient(UUID id, PatientRequestDTO request);
 
-    Patient updatePatient(UUID id, Patient patient);
+    PatientResponseDTO getPatient(UUID id);
 
     void deletePatient(UUID id);
 
-    List<Patient> searchPatients(String familyName, String givenName, String identifier, LocalDate birthDate);
+    List<PatientResponseDTO> searchPatients(
+            String family, String given, String identifier, LocalDate birthDate, int page, int size
+    );
 }

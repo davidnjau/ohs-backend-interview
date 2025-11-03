@@ -37,6 +37,8 @@ public class Patient {
     @Column(nullable = false, length = 20)
     private String gender;
 
+    private boolean valid;
+
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Encounter> encounters;
 
@@ -57,6 +59,14 @@ public class Patient {
         this.gender = gender;
         this.encounters = encounters;
         this.observations = observations;
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public void setValid(boolean valid) {
+        this.valid = valid;
     }
 
     public UUID getId() {

@@ -1,7 +1,11 @@
 package org.example.repository;
 
 import org.example.entity.Patient;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -11,8 +15,23 @@ import java.util.UUID;
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, UUID> {
 
-    List<Patient> findByFamilyNameContainingIgnoreCase(String familyName);
-    List<Patient> findByGivenNameContainingIgnoreCase(String givenName);
-    List<Patient> findByIdentifier(String identifier);
-    List<Patient> findByBirthDate(LocalDate birthDate);
+    List<Patient> findByFamilyNameContainingIgnoreCase(String familyName, Pageable pageable);
+    List<Patient> findByGivenNameContainingIgnoreCase(String givenName, Pageable pageable);
+    List<Patient> findByIdentifier(String identifier, Pageable pageable);
+    List<Patient> findByBirthDate(LocalDate birthDate, Pageable pageable);
+
+    @Query("""
+        SELECT p FROM Patient p 
+        WHERE (:family IS NULL OR LOWER(p.familyName) LIKE LOWER(CONCAT('%', :family, '%')))
+        AND (:given IS NULL OR LOWER(p.givenName) LIKE LOWER(CONCAT('%', :given, '%')))
+        AND (:identifier IS NULL OR p.identifier = :identifier)
+        AND (:birthDate IS NULL OR p.birthDate = :birthDate)
+       """)
+    Page<Patient> searchPatients(
+            @Param("family") String family,
+            @Param("given") String given,
+            @Param("identifier") String identifier,
+            @Param("birthDate") LocalDate birthDate,
+            Pageable pageable
+    );
 }

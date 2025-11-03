@@ -1,6 +1,9 @@
 package org.example.controllers;
 
+import org.example.dto.PatientRequestDTO;
+import org.example.dto.PatientResponseDTO;
 import org.example.entity.Patient;
+import org.example.exception.NotFoundException;
 import org.example.exception.ResponseWrapper;
 import org.example.services.PatientService;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +24,7 @@ public class PatientController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseWrapper<Patient>> createPatient(@RequestBody Patient patient) {
+    public ResponseEntity<ResponseWrapper<PatientResponseDTO>> createPatient(@RequestBody PatientRequestDTO patient) {
         return ResponseEntity.ok(
                 ResponseWrapper
                         .success(patientService.createPatient(patient)
@@ -30,28 +33,36 @@ public class PatientController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Patient> getPatient(@PathVariable UUID id) {
+    public ResponseEntity<ResponseWrapper<PatientResponseDTO>> getPatient(@PathVariable UUID id) {
 
-        
-
-        return patientService.getPatient(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        PatientResponseDTO patient = patientService.getPatient(id);
+        return ResponseEntity.ok(
+                ResponseWrapper.success(patient)
+        );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Patient> updatePatient(@PathVariable UUID id, @RequestBody Patient patient) {
-        return ResponseEntity.ok(patientService.updatePatient(id, patient));
+    public ResponseEntity<ResponseWrapper<PatientResponseDTO>> updatePatient(
+            @PathVariable UUID id,
+            @RequestBody PatientRequestDTO patient) {
+
+        PatientResponseDTO updatedPatient = patientService.updatePatient(id, patient);
+        return ResponseEntity.ok(
+                ResponseWrapper.success(updatedPatient)
+        );
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePatient(@PathVariable UUID id) {
+    public ResponseEntity<ResponseWrapper<String>> deletePatient(@PathVariable UUID id) {
+
         patientService.deletePatient(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(
+                ResponseWrapper.success("Patient deactivated successfully")
+        );
     }
 
     @GetMapping
-    public ResponseEntity<List<Patient>> searchPatients(
+    public ResponseEntity<ResponseWrapper<List<PatientResponseDTO>>> searchPatients(
             @RequestParam(required = false) String family,
             @RequestParam(required = false) String given,
             @RequestParam(required = false) String identifier,
@@ -59,8 +70,12 @@ public class PatientController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
+
+        List<PatientResponseDTO> patients = patientService.searchPatients(
+                family, given, identifier, birthDate, page, size);
+
         return ResponseEntity.ok(
-                patientService.searchPatients(family, given, identifier, birthDate)
+                ResponseWrapper.success(patients)
         );
     }
 }
