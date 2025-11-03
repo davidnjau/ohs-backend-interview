@@ -10,5 +10,5 @@ import java.util.UUID;
 @Repository
 public interface EncounterRepository extends JpaRepository<Encounter, UUID> {
 
-    List<Encounter> findByPatientId(Long patientId);
+    List<Encounter> findByPatientId(UUID patientId);
 }
