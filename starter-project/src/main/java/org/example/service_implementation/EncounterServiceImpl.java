@@ -34,12 +34,13 @@ public class EncounterServiceImpl implements EncounterService {
     public EncounterResponseDTO createEncounter(EncounterRequestDTO request) {
 
         // Validate patient exists before creating encounter
-        boolean patientExists = patientRepository.existsById(request.patientId());
-        if (!patientExists) {
+        Optional<Patient> optionalPatient = patientRepository.findById(request.patientId());
+        if (optionalPatient.isEmpty()) {
             throw new NotFoundException("Patient not found");
         }
+        Patient patient = optionalPatient.get();
 
-        Encounter encounter = encounterMapper.toEntity(request);
+        Encounter encounter = encounterMapper.toEntity(request, patient);
         return encounterMapper.toDTO(encounterRepository.save(encounter));
     }
 

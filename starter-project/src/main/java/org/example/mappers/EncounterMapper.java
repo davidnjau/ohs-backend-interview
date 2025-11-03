@@ -3,14 +3,15 @@ package org.example.mappers;
 import org.example.dto.EncounterRequestDTO;
 import org.example.dto.EncounterResponseDTO;
 import org.example.entity.Encounter;
+import org.example.entity.Patient;
 import org.springframework.stereotype.Component;
 
 @Component
 public class EncounterMapper {
 
-    public Encounter toEntity(EncounterRequestDTO dto) {
+    public Encounter toEntity(EncounterRequestDTO dto, Patient patient) {
         Encounter encounter = new Encounter();
-        encounter.setPatientId(dto.patientId());
+        encounter.setPatient(patient);
         encounter.setStart(dto.start());
         encounter.setEnd(dto.end());
         encounter.setEncounterClass(dto.encounterClass());
@@ -20,7 +21,7 @@ public class EncounterMapper {
     public EncounterResponseDTO toDTO(Encounter encounter) {
         return new EncounterResponseDTO(
                 encounter.getId(),
-                encounter.getPatientId(),
+                encounter.getPatient().getId(),
                 encounter.getStart(),
                 encounter.getEnd(),
                 encounter.getEncounterClass()
