@@ -13,3 +13,5 @@ target/
 .DS_Store
 
 EVALUATION_RUBRIC.md
+
+.env

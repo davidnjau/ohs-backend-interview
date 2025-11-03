@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  ohs_db:
+    image: ${SPRING_POSTGRES_IMAGE}
+    container_name: ${SPRING_DB_CONTAINER_NAME}
+    restart: always
+
+    environment:
+      POSTGRES_DB: ${SPRING_DB_NAME}
+      POSTGRES_USER: ${SPRING_DATASOURCE_USERNAME}
+      POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "db_prod"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
+
+    ports:
+      - "${SPRING_POSTGRES_PORT}:5432"
+    volumes:
+      - ohs_db:/var/lib/postgresql/data
+    networks:
+      - ohs_spring_network
+
+  redis-vector:
+    image: ${REDIS_IMAGE}
+    container_name: ${REDIS_CONTAINER_NAME}
+    ports:
+      - "${REDIS_PORT}:6379"
+      - "${REDIS_WEB_PORT}:8001"
+    volumes:
+      - redis_data:/data
+    environment:
+      - REDIS_ARGS=--save 900 1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - ohs_spring_network
+
+volumes:
+  ohs_db:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  ohs_spring_network:
+    external: true
