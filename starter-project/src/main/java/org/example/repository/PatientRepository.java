@@ -15,11 +15,6 @@ import java.util.UUID;
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, UUID> {
 
-    List<Patient> findByFamilyNameContainingIgnoreCase(String familyName, Pageable pageable);
-    List<Patient> findByGivenNameContainingIgnoreCase(String givenName, Pageable pageable);
-    List<Patient> findByIdentifier(String identifier, Pageable pageable);
-    List<Patient> findByBirthDate(LocalDate birthDate, Pageable pageable);
-
     @Query("""
         SELECT p FROM Patient p 
         WHERE (:family IS NULL OR LOWER(p.familyName) LIKE LOWER(CONCAT('%', :family, '%')))

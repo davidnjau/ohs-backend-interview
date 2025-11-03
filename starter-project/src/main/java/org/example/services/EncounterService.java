@@ -1,5 +1,7 @@
 package org.example.services;
 
+import org.example.dto.EncounterRequestDTO;
+import org.example.dto.EncounterResponseDTO;
 import org.example.entity.Encounter;
 
 import java.util.List;
@@ -8,9 +10,9 @@ import java.util.UUID;
 
 public interface EncounterService {
 
-    Encounter createEncounter(Encounter encounter);
+    EncounterResponseDTO createEncounter(EncounterRequestDTO request);
 
-    Optional<Encounter> getEncounter(UUID id);
+    EncounterResponseDTO getEncounter(UUID id);
 
-    List<Encounter> getEncountersForPatient(UUID patientId);
+    List<EncounterResponseDTO> getEncountersForPatient(UUID patientId, int page, int size);
 }

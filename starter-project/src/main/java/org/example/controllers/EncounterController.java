@@ -1,6 +1,9 @@
 package org.example.controllers;
 
+import org.example.dto.EncounterRequestDTO;
+import org.example.dto.EncounterResponseDTO;
 import org.example.entity.Encounter;
+import org.example.exception.ResponseWrapper;
 import org.example.services.EncounterService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,19 +22,30 @@ public class EncounterController {
     }
 
     @PostMapping
-    public ResponseEntity<Encounter> createEncounter(@RequestBody Encounter encounter) {
-        return ResponseEntity.ok(encounterService.createEncounter(encounter));
+    public ResponseEntity<ResponseWrapper<EncounterResponseDTO>> createEncounter(@RequestBody EncounterRequestDTO encounter) {
+        return ResponseEntity.ok(
+                ResponseWrapper.success(encounterService.createEncounter(encounter))
+        );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Encounter> getEncounter(@PathVariable UUID id) {
-        return encounterService.getEncounter(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ResponseWrapper<EncounterResponseDTO>> getEncounter(@PathVariable UUID id) {
+
+        EncounterResponseDTO encounter = encounterService.getEncounter(id);
+        return ResponseEntity.ok(
+                ResponseWrapper.success(encounter)
+        );
     }
 
     @GetMapping("/patient/{patientId}")
-    public ResponseEntity<List<Encounter>> getEncountersForPatient(@PathVariable UUID patientId) {
-        return ResponseEntity.ok(encounterService.getEncountersForPatient(patientId));
+    public ResponseEntity<ResponseWrapper<List<EncounterResponseDTO>>> getEncountersForPatient(
+            @PathVariable UUID patientId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+            ) {
+        List<EncounterResponseDTO> encounters = encounterService.getEncountersForPatient(patientId, page, size);
+        return ResponseEntity.ok(
+                ResponseWrapper.success(encounters)
+        );
     }
 }

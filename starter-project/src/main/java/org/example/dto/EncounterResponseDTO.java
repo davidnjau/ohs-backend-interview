@@ -1,10 +1,11 @@
 package org.example.dto;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record EncounterResponseDTO(
-        Long id,
-        Long patientId,
+        UUID id,
+        UUID patientId,
         LocalDateTime start,
         LocalDateTime end,
         String encounterClass

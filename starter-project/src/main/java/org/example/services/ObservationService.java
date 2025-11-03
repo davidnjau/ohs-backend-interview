@@ -1,5 +1,7 @@
 package org.example.services;
 
+import org.example.dto.ObservationRequestDTO;
+import org.example.dto.ObservationResponseDTO;
 import org.example.entity.Observation;
 
 import java.util.List;
@@ -8,11 +10,11 @@ import java.util.UUID;
 
 public interface ObservationService {
 
-    Observation createObservation(Observation observation);
+    ObservationResponseDTO createObservation(ObservationRequestDTO observation);
 
-    Optional<Observation> getObservation(UUID id);
+    ObservationResponseDTO getObservation(UUID id);
 
-    List<Observation> getObservationsForPatient(UUID patientId);
+    List<ObservationResponseDTO> getObservationsForPatient(UUID patientId, int page, int size);
 
-    List<Observation> getObservationsForEncounter(UUID encounterId);
+    List<ObservationResponseDTO> getObservationsForEncounter(UUID encounterId, int page, int size);
 }

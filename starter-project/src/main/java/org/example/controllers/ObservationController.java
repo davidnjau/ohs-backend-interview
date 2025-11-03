@@ -1,6 +1,9 @@
 package org.example.controllers;
 
+import org.example.dto.ObservationRequestDTO;
+import org.example.dto.ObservationResponseDTO;
 import org.example.entity.Observation;
+import org.example.exception.ResponseWrapper;
 import org.example.services.ObservationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,24 +22,44 @@ public class ObservationController {
     }
 
     @PostMapping
-    public ResponseEntity<Observation> createObservation(@RequestBody Observation observation) {
-        return ResponseEntity.ok(observationService.createObservation(observation));
+    public ResponseEntity<ResponseWrapper<ObservationResponseDTO>> createObservation(@RequestBody ObservationRequestDTO observation) {
+        return ResponseEntity.ok(
+                ResponseWrapper.success(observationService.createObservation(observation))
+        );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Observation> getObservation(@PathVariable UUID id) {
-        return observationService.getObservation(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ResponseWrapper<ObservationResponseDTO>> getObservation(@PathVariable UUID id) {
+
+        ObservationResponseDTO observation = observationService.getObservation(id);
+        return ResponseEntity.ok(
+                ResponseWrapper.success(observation)
+        );
+
+
     }
 
     @GetMapping("/patient/{patientId}")
-    public ResponseEntity<List<Observation>> getObservationsForPatient(@PathVariable UUID patientId) {
-        return ResponseEntity.ok(observationService.getObservationsForPatient(patientId));
+    public ResponseEntity<ResponseWrapper<List<ObservationResponseDTO>>> getObservationsForPatient(
+            @PathVariable UUID patientId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+
+    ) {
+
+        return ResponseEntity.ok(
+                ResponseWrapper.success(observationService.getObservationsForPatient(patientId, page, size))
+        );
+
     }
 
     @GetMapping("/encounter/{encounterId}")
-    public ResponseEntity<List<Observation>> getObservationsForEncounter(@PathVariable UUID encounterId) {
-        return ResponseEntity.ok(observationService.getObservationsForEncounter(encounterId));
-    }
+    public ResponseEntity<ResponseWrapper<List<ObservationResponseDTO>>> getObservationsForEncounter(
+            @PathVariable UUID encounterId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return ResponseEntity.ok(
+                ResponseWrapper.success(observationService.getObservationsForPatient(encounterId, page, size))
+        );    }
 }

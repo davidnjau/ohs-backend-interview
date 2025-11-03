@@ -2,16 +2,18 @@ package org.example.mappers;
 
 import org.example.dto.ObservationRequestDTO;
 import org.example.dto.ObservationResponseDTO;
+import org.example.entity.Encounter;
 import org.example.entity.Observation;
+import org.example.entity.Patient;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ObservationMapper {
 
-    public Observation toEntity(ObservationRequestDTO dto) {
+    public Observation toEntity(ObservationRequestDTO dto, Patient patient, Encounter encounter) {
         Observation observation = new Observation();
-        observation.setPatientId(dto.patientId());
-        observation.setEncounterId(dto.encounterId());
+        observation.setPatient(patient);
+        observation.setEncounter(encounter);
         observation.setCode(dto.code());
         observation.setValue(dto.value());
         observation.setEffectiveDateTime(dto.effectiveDateTime());
@@ -21,8 +23,8 @@ public class ObservationMapper {
     public ObservationResponseDTO toDTO(Observation observation) {
         return new ObservationResponseDTO(
                 observation.getId(),
-                observation.getPatientId(),
-                observation.getEncounterId(),
+                observation.getPatient().getId(),
+                observation.getEncounter().getId(),
                 observation.getCode(),
                 observation.getValue(),
                 observation.getEffectiveDateTime()
