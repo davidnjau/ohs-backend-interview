@@ -1,0 +1,15 @@
+# Maven
+target/
+*.iml
+.project
+.classpath
+.settings/
+
+# IDEs
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+
+EVALUATION_RUBRIC.md
