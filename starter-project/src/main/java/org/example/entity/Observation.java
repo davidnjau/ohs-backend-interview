@@ -2,6 +2,7 @@ package org.example.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(
@@ -17,7 +18,7 @@ public class Observation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "patient_id", nullable = false)
@@ -37,4 +38,62 @@ public class Observation {
     private LocalDateTime effectiveDateTime;
 
     // Getters and setters
+
+    public Observation() {}
+
+    public Observation(Patient patient, Encounter encounter, String code, String value, LocalDateTime effectiveDateTime) {
+        this.patient = patient;
+        this.encounter = encounter;
+        this.code = code;
+        this.value = value;
+        this.effectiveDateTime = effectiveDateTime;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
+    }
+
+    public Encounter getEncounter() {
+        return encounter;
+    }
+
+    public void setEncounter(Encounter encounter) {
+        this.encounter = encounter;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public LocalDateTime getEffectiveDateTime() {
+        return effectiveDateTime;
+    }
+
+    public void setEffectiveDateTime(LocalDateTime effectiveDateTime) {
+        this.effectiveDateTime = effectiveDateTime;
+    }
 }
