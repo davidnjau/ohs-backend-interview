@@ -1,7 +1,10 @@
 package org.example.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,29 +14,34 @@ import java.util.UUID;
         indexes = {
                 @Index(name = "idx_encounter_patient_id", columnList = "patient_id"),
                 @Index(name = "idx_encounter_start", columnList = "start"),
-                @Index(name = "idx_encounter_class", columnList = "encounterClass")
+                @Index(name = "idx_encounter_class", columnList = "encounter_class")
         }
 )
 public class Encounter {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "patient_id", nullable = false)
+    @JoinColumn(
+            name = "patient_id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "fk_encounter_patient")
+    )
     private Patient patient;
 
     @Column(nullable = false)
     private LocalDateTime start;
 
-    private LocalDateTime end;
+    @Column(name = "end_time")
+    private LocalDateTime endTime;
 
-    @Column(nullable = false, length = 50)
+    @Column(name = "encounter_class", nullable = false, length = 50)
     private String encounterClass;
 
-    @OneToMany(mappedBy = "encounter", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Observation> observations;
+    @OneToMany(mappedBy = "encounter", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Observation> observations = new ArrayList<>();
 
     // Getters and setters
 
@@ -41,10 +49,10 @@ public class Encounter {
     public Encounter() {
     }
 
-    public Encounter(Patient patient, LocalDateTime start, LocalDateTime end, String encounterClass, List<Observation> observations) {
+    public Encounter(Patient patient, LocalDateTime start, LocalDateTime endTime, String encounterClass, List<Observation> observations) {
         this.patient = patient;
         this.start = start;
-        this.end = end;
+        this.endTime = endTime;
         this.encounterClass = encounterClass;
         this.observations = observations;
     }
@@ -73,12 +81,12 @@ public class Encounter {
         this.start = start;
     }
 
-    public LocalDateTime getEnd() {
-        return end;
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 
-    public void setEnd(LocalDateTime end) {
-        this.end = end;
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     public String getEncounterClass() {

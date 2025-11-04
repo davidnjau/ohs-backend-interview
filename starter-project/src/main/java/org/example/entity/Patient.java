@@ -1,8 +1,10 @@
 package org.example.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,37 +13,39 @@ import java.util.UUID;
         name = "patients",
         indexes = {
                 @Index(name = "idx_patient_identifier", columnList = "identifier"),
-                @Index(name = "idx_patient_family_name", columnList = "familyName"),
-                @Index(name = "idx_patient_given_name", columnList = "givenName"),
-                @Index(name = "idx_patient_birth_date", columnList = "birthDate")
+                @Index(name = "idx_patient_family_name", columnList = "family_name"),
+                @Index(name = "idx_patient_given_name", columnList = "given_name"),
+                @Index(name = "idx_patient_birth_date", columnList = "birth_date")
         }
 )
 public class Patient {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
     @Column(unique = true, nullable = false, length = 50)
     private String identifier;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "given_name", nullable = false, length = 100)
     private String givenName;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "family_name", nullable = false, length = 100)
     private String familyName;
 
-    @Column(nullable = false)
+    @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
 
     @Column(nullable = false, length = 20)
     private String gender;
 
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Encounter> encounters;
+    private boolean valid;
 
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Observation> observations;
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Encounter> encounters = new ArrayList<>();
+
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Observation> observations = new ArrayList<>();
 
     // Getters and setters
 
@@ -57,6 +61,14 @@ public class Patient {
         this.gender = gender;
         this.encounters = encounters;
         this.observations = observations;
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public void setValid(boolean valid) {
+        this.valid = valid;
     }
 
     public UUID getId() {

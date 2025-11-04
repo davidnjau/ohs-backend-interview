@@ -1,44 +1,45 @@
 # ==========================
-# Stage 1 — Build the JAR
+# Multi-stage Dockerfile for Spring Boot app
 # ==========================
-FROM eclipse-temurin:17-jdk-alpine AS builder
+
+# --- Stage 1: Build the Spring Boot JAR ---
+FROM eclipse-temurin:17-jdk-focal AS builder
+
 WORKDIR /workspace
 
-# Copy only the necessary files first for dependency caching
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
+# Install Maven since mvnw is not available
+RUN apt-get update && apt-get install -y maven && rm -rf /var/lib/apt/lists/*
 
-RUN chmod +x mvnw && ./mvnw dependency:go-offline -B
+# Copy only files needed for dependency caching
+COPY starter-project/pom.xml starter-project/pom.xml
 
-# Copy source and build
-COPY src src
-RUN ./mvnw -B clean package -DskipTests
+# Download dependencies first (improves build caching)
+RUN mvn -B -ntp -f starter-project/pom.xml dependency:go-offline
 
-# ==========================
-# Stage 2 — Runtime
-# ==========================
-FROM eclipse-temurin:17-jre-alpine
+# Copy source code and build the app
+COPY starter-project starter-project
+RUN mvn -B -ntp -f starter-project/pom.xml clean package -DskipTests
 
-ARG APP_USER=vbroadcast
-RUN addgroup -S ${APP_USER} && adduser -S -G ${APP_USER} ${APP_USER}
+# --- Stage 2: Runtime image ---
+FROM eclipse-temurin:17-jre-jammy
 
 WORKDIR /app
 
-# Copy Spring Boot layered JAR
-COPY --from=builder /workspace/target/*.jar app.jar
+# Copy the fat JAR from builder stage
+COPY --from=builder /workspace/starter-project/target/*.jar app.jar
 
-# Optimize JVM options for container usage
-ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75 -XX:+ExitOnOutOfMemoryError"
+# Create a non-root user
+RUN useradd -m appuser
+USER appuser
 
-RUN mkdir -p /var/log/vbroadcast && chown -R ${APP_USER}:${APP_USER} /var/log/vbroadcast
+# Expose Spring Boot port
+EXPOSE 8080
 
-USER ${APP_USER}
+# Healthcheck (requires Actuator)
+HEALTHCHECK --interval=30s --timeout=3s --start-period=20s --retries=3 \
+  CMD [ "sh", "-c", "wget -qO- --timeout=2 http://localhost:8080/actuator/health || exit 1" ]
 
-EXPOSE 8088
+# Java runtime options (can be overridden)
+ENV JAVA_OPTS="-Xms128m -Xmx512m -XX:+UseG1GC -Djava.security.egd=file:/dev/./urandom"
 
-# Optional healthcheck
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://localhost:8088/actuator/health || exit 1
-
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Duser.timezone=Africa/Nairobi -jar /app/app.jar"]
+ENTRYPOINT [ "sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar" ]
