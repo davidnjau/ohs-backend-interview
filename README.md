@@ -221,13 +221,10 @@ spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
 
 ### Running Tests
 ```bash
-mvn test
 ```
 
 ### Test Structure
-- **Unit Tests**: Test individual service methods
-- **Integration Tests**: Test controller endpoints
-- **Repository Tests**: Test data access layer
+
 
 ## Docker Support
 
