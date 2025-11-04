@@ -234,8 +234,8 @@ mvn test
 ### Dockerfile
 The project includes a Dockerfile for containerization:
 ```bash
-docker build -t ohs-backend:latest .
-docker run -p 8080:8080 ohs-backend:latest
+chmod +x build_and_run.sh
+./build_and_run.sh
 ```
 
 ### Docker Compose
