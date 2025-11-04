@@ -35,7 +35,7 @@ RUN mkdir -p /var/log/vbroadcast && chown -R ${APP_USER}:${APP_USER} /var/log/vb
 
 USER ${APP_USER}
 
-EXPOSE 8088
+EXPOSE 8080
 
 # Optional healthcheck
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \

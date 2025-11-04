@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Component
 public class PatientMapper {
 
+
     public Patient toEntity(PatientRequestDTO dto) {
         Patient patient = new Patient();
         patient.setIdentifier(dto.identifier());
