@@ -1,5 +1,6 @@
 package org.example.service_implementation;
 
+import jakarta.persistence.criteria.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.example.dto.PatientRequestDTO;
 import org.example.dto.PatientResponseDTO;
@@ -12,6 +13,7 @@ import org.example.services.PatientService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -124,18 +126,30 @@ public class PatientServiceImpl implements PatientService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Patient> results = patientRepository.searchPatients(
-                family,
-                given,
-                identifier,
-                birthDate,
-                pageable
-        );
+        Specification<Patient> spec = (root, query, cb) -> {
+            Predicate predicate = cb.conjunction(); // start with TRUE
 
-        Page<PatientResponseDTO> pageableResults = results.map(patientMapper::toDTO);
+            if (family != null && !family.isEmpty()) {
+                predicate = cb.and(predicate, cb.like(cb.lower(root.get("familyName")), "%" + family.toLowerCase() + "%"));
+            }
+            if (given != null && !given.isEmpty()) {
+                predicate = cb.and(predicate, cb.like(cb.lower(root.get("givenName")), "%" + given.toLowerCase() + "%"));
+            }
+            if (identifier != null && !identifier.isEmpty()) {
+                predicate = cb.and(predicate, cb.equal(root.get("identifier"), identifier));
+            }
+            if (birthDate != null) {
+                predicate = cb.and(predicate, cb.equal(root.get("birthDate"), birthDate));
+            }
 
-        // Convert the Page<T> to a List<T> using getContent()
-        return pageableResults.getContent();
+            return predicate;
+        };
+
+        Page<Patient> results = patientRepository.findAll(spec, pageable);
+        log.debug("Search results: {}", results);
+        // Map the Patient entities to PatientResponseDTOs using the patientMapper
+        return results.map(patientMapper::toDTO).getContent();
+
     }
 
 }
