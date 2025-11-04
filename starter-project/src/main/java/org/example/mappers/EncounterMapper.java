@@ -13,7 +13,7 @@ public class EncounterMapper {
         Encounter encounter = new Encounter();
         encounter.setPatient(patient);
         encounter.setStart(dto.start());
-        encounter.setEnd(dto.end());
+        encounter.setEndTime(dto.endTime());
         encounter.setEncounterClass(dto.encounterClass());
         return encounter;
     }
@@ -23,7 +23,7 @@ public class EncounterMapper {
                 encounter.getId(),
                 encounter.getPatient().getId(),
                 encounter.getStart(),
-                encounter.getEnd(),
+                encounter.getEndTime(),
                 encounter.getEncounterClass()
         );
     }

@@ -54,6 +54,8 @@ public class ObservationServiceImpl implements ObservationService {
                 observation.code(),
                 observation.value(),
                 observation.effectiveDateTime());
+        observationSave.setId(UUID.randomUUID());
+
         observationRepository.save(observationSave);
 
         return observationMapper.toDTO(observationSave);

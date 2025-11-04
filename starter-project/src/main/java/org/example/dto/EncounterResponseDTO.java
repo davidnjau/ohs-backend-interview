@@ -7,6 +7,6 @@ public record EncounterResponseDTO(
         UUID id,
         UUID patientId,
         LocalDateTime start,
-        LocalDateTime end,
+        LocalDateTime endTime,
         String encounterClass
 ) {}

@@ -1,5 +1,6 @@
 package org.example.controllers;
 
+import jakarta.validation.Valid;
 import org.example.dto.PatientRequestDTO;
 import org.example.dto.PatientResponseDTO;
 import org.example.entity.Patient;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+
 
 @RestController
 @RequestMapping("/api/patients")
@@ -27,8 +29,7 @@ public class PatientController {
     public ResponseEntity<ResponseWrapper<PatientResponseDTO>> createPatient(@RequestBody PatientRequestDTO patient) {
         return ResponseEntity.ok(
                 ResponseWrapper
-                        .success(patientService.createPatient(patient)
-                        )
+                        .success(patientService.createPatient(patient))
         );
     }
 

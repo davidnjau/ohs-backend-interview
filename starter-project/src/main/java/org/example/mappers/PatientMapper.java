@@ -5,6 +5,8 @@ import org.example.dto.PatientResponseDTO;
 import org.example.entity.Patient;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 public class PatientMapper {
 
@@ -13,7 +15,6 @@ public class PatientMapper {
         patient.setIdentifier(dto.identifier());
         patient.setGivenName(dto.givenName());
         patient.setFamilyName(dto.familyName());
-        patient.setBirthDate(dto.birthDate());
         patient.setGender(dto.gender());
         return patient;
     }

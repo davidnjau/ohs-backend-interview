@@ -41,6 +41,7 @@ public class EncounterServiceImpl implements EncounterService {
         Patient patient = optionalPatient.get();
 
         Encounter encounter = encounterMapper.toEntity(request, patient);
+        encounter.setId(UUID.randomUUID());
         return encounterMapper.toDTO(encounterRepository.save(encounter));
     }
 

@@ -15,7 +15,7 @@ public class ObservationMapper {
         observation.setPatient(patient);
         observation.setEncounter(encounter);
         observation.setCode(dto.code());
-        observation.setValue(dto.value());
+        observation.setObservationValue(dto.value());
         observation.setEffectiveDateTime(dto.effectiveDateTime());
         return observation;
     }
@@ -26,7 +26,7 @@ public class ObservationMapper {
                 observation.getPatient().getId(),
                 observation.getEncounter().getId(),
                 observation.getCode(),
-                observation.getValue(),
+                observation.getObservationValue(),
                 observation.getEffectiveDateTime()
         );
     }

@@ -1,6 +1,8 @@
 package org.example.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -11,41 +13,48 @@ import java.util.UUID;
                 @Index(name = "idx_obs_patient_id", columnList = "patient_id"),
                 @Index(name = "idx_obs_encounter_id", columnList = "encounter_id"),
                 @Index(name = "idx_obs_code", columnList = "code"),
-                @Index(name = "idx_obs_effective_date", columnList = "effectiveDateTime")
+                @Index(name = "idx_obs_effective_date", columnList = "effective_date_time")
         }
 )
 public class Observation {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "patient_id", nullable = false)
+    @JoinColumn(
+            name = "patient_id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "fk_obs_patient")
+    )
     private Patient patient;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "encounter_id")
+    @JoinColumn(
+            name = "encounter_id",
+            foreignKey = @ForeignKey(name = "fk_obs_encounter")
+    )
     private Encounter encounter;
 
     @Column(nullable = false, length = 50)
     private String code;
 
-    @Column(nullable = false, length = 255)
-    private String value;
+    @Column(nullable = false, length = 255, name = "observation_value")
+    private String observationValue;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "effective_date_time")
     private LocalDateTime effectiveDateTime;
 
     // Getters and setters
 
     public Observation() {}
 
-    public Observation(Patient patient, Encounter encounter, String code, String value, LocalDateTime effectiveDateTime) {
+    public Observation(Patient patient, Encounter encounter, String code, String observationValue, LocalDateTime effectiveDateTime) {
         this.patient = patient;
         this.encounter = encounter;
         this.code = code;
-        this.value = value;
+        this.observationValue = observationValue;
         this.effectiveDateTime = effectiveDateTime;
     }
 
@@ -81,12 +90,12 @@ public class Observation {
         this.code = code;
     }
 
-    public String getValue() {
-        return value;
+    public String getObservationValue() {
+        return observationValue;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setObservationValue(String observationValue) {
+        this.observationValue = observationValue;
     }
 
     public LocalDateTime getEffectiveDateTime() {

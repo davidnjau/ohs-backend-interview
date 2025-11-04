@@ -8,6 +8,6 @@ import java.util.UUID;
 public record EncounterRequestDTO(
         @NotNull UUID patientId,
         @NotNull LocalDateTime start,
-        LocalDateTime end,
+        LocalDateTime endTime,
         @NotNull String encounterClass
 ) {}
