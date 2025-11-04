@@ -60,18 +60,8 @@ public class ObservationController {
             @RequestParam(defaultValue = "20") int size
     ) {
         return ResponseEntity.ok(
-                ResponseWrapper.success(observationService.getObservationsForPatient(encounterId, page, size))
+                ResponseWrapper.success(observationService.getObservationsForEncounter(encounterId, page, size))
         );
     }
-    @GetMapping("/encounter/{patientId}/{encounterId}")
-    public ResponseEntity<ResponseWrapper<List<ObservationResponseDTO>>> getObservationsForEncounterAndPatients(
-            @PathVariable UUID patientId,
-            @PathVariable UUID encounterId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
-    ) {
-        return ResponseEntity.ok(
-                ResponseWrapper.success(observationService.getObservationsForEncounterAndPatients(patientId, encounterId, page, size))
-        );
-    }
+
 }

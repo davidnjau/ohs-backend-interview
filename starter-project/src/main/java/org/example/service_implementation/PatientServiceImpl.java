@@ -6,6 +6,7 @@ import org.example.dto.PatientRequestDTO;
 import org.example.dto.PatientResponseDTO;
 import org.example.entity.Patient;
 import org.example.exception.BadRequestException;
+import org.example.exception.ConflictException;
 import org.example.exception.NotFoundException;
 import org.example.mappers.PatientMapper;
 import org.example.repository.PatientRepository;
@@ -49,6 +50,13 @@ public class PatientServiceImpl implements PatientService {
 
         String date = request.birthDate();
         LocalDate parsedBirthDate = parseDate(date);
+
+        String indentifier = request.identifier();
+        Optional<Patient> patientOptional = patientRepository.findByIdentifier(indentifier);
+
+        if (patientOptional.isPresent()) {
+            throw new ConflictException("Identifier already exists");
+        }
 
         Patient patient = patientMapper.toEntity(request);
         patient.setId(UUID.randomUUID());

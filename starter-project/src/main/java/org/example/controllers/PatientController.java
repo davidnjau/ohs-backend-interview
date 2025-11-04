@@ -1,11 +1,15 @@
 package org.example.controllers;
 
 import jakarta.validation.Valid;
+import org.example.dto.EncounterResponseDTO;
+import org.example.dto.ObservationResponseDTO;
 import org.example.dto.PatientRequestDTO;
 import org.example.dto.PatientResponseDTO;
 import org.example.entity.Patient;
 import org.example.exception.NotFoundException;
 import org.example.exception.ResponseWrapper;
+import org.example.services.EncounterService;
+import org.example.services.ObservationService;
 import org.example.services.PatientService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,9 +24,13 @@ import java.util.UUID;
 public class PatientController {
 
     private final PatientService patientService;
+    private final EncounterService encounterService;
+    private final ObservationService observationService;
 
-    public PatientController(PatientService patientService) {
+    public PatientController(PatientService patientService, EncounterService encounterService, ObservationService observationService) {
         this.patientService = patientService;
+        this.encounterService = encounterService;
+        this.observationService = observationService;
     }
 
     @PostMapping
@@ -79,4 +87,31 @@ public class PatientController {
                 ResponseWrapper.success(patients)
         );
     }
+
+    @GetMapping("/{patientId}/encounters")
+    public ResponseEntity<ResponseWrapper<List<EncounterResponseDTO>>> getEncounters(
+            @PathVariable UUID patientId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+            ) {
+
+        List<EncounterResponseDTO> encounters = encounterService.getEncountersForPatient(patientId, page, size);
+        return ResponseEntity.ok(
+                ResponseWrapper.success(encounters)
+        );
+
+    }
+
+    @GetMapping("/{patientId}/observations")
+    public ResponseEntity<ResponseWrapper<List<ObservationResponseDTO>>> getObservations(
+            @PathVariable UUID patientId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+
+        return ResponseEntity.ok(
+                ResponseWrapper.success(observationService.getObservationsForPatient(patientId, page, size))
+        );
+    }
+
 }

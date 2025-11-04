@@ -26,7 +26,8 @@ public class PatientMapper {
                 patient.getGivenName(),
                 patient.getFamilyName(),
                 patient.getBirthDate(),
-                patient.getGender()
+                patient.getGender(),
+                patient.isValid()
         );
     }
 }

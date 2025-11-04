@@ -21,4 +21,7 @@ public interface PatientService {
     List<PatientResponseDTO> searchPatients(
             String family, String given, String identifier, LocalDate birthDate, int page, int size
     );
+
+
+
 }

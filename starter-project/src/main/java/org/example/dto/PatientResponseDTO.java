@@ -9,5 +9,6 @@ public record PatientResponseDTO(
         String givenName,
         String familyName,
         LocalDate birthDate,
-        String gender
+        String gender,
+        boolean valid
 ) {}
